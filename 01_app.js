@@ -7,15 +7,26 @@ const MongoClient = require('mongodb').MongoClient; // le pilote MongoDB
 const ObjectID = require('mongodb').ObjectID;
 app.use(bodyParser.urlencoded({extended: true}));
 /* on associe le moteur de vue au module «ejs» */
+const cookieParser = require('cookie-parser');
+app.use(cookieParser())
+ 
+//app.get('/', function(req, res) {
+/* pour extraire l'ensemble des cookies */
+ //console.log('Cookies: ', req.cookies)
+/* Pour récupérer la valeur d'un cookie spécifique « langueChoisie » */
+// console.log('Cookies: ', req.cookies.langueChoisie)
+//})
+
 app.use(express.static('public'));
 
 
+const i18n = require("i18n");
 
-/* Ajoute l'objet i18n à l'objet global «res» */
 i18n.configure({ 
    locales : ['fr', 'en'],
    cookie : 'langueChoisie', 
-   directory : __dirname + '/locales' })
+   directory : __dirname + '/locales' 
+ });
 
 /* Ajouter l'objet i18n à l'objet global «res» */
 app.use(i18n.init);
@@ -25,7 +36,7 @@ let db // variable qui contiendra le lien sur la BD
 
 MongoClient.connect('mongodb://127.0.0.1:27017', (err, database) => {
  if (err) return console.log(err)
- db = database.db('carnet_adresse')
+ db = database.db('adresse')
 console.log('connexion à la BD')
 // lancement du serveur Express sur le port 8081
  app.listen(8081, (err) => {
@@ -42,18 +53,14 @@ Les routes
 ////////////////////////////////////////// Route /
 app.set('view engine', 'ejs'); // générateur de template
 
-app.get('/en', (req, res) => {
-// 'en' est enregistré comme langue
-res.setLocale('en')
-// on en profite pour sauver la langue dans un cookie
-res.cookie('moncookie', 'en');
-// retourne le catalogue
-console.log('res.getCatalog() = ' + res.getCatalog())
-// retourne la langue qui a été choisie
-console.log('res.getLocale() = ' + res.getLocale())
-var bienvenue = 'hello';
-console.log('en= ' + res.__('bienvenue')
-
+app.get('/:lang(en|fr)', (req, res) =>{
+  res.cookie('langueChoisie' , req.params.lang);
+  res.setLocale(req.params.lang);
+  console.log('langueChoisie: ', req.params.lang);
+  console.log(res.__('bonjour'));
+  console.log(res.__('vitesse'));
+  console.log(res.__('Accueil'));
+  res.render('accueil.ejs');
 });
 
 //////////////////////////////////////////
@@ -63,14 +70,6 @@ app.get('/', function (req, res) {
  
   });
 
-
-//////////////////////////////////////////
-app.get('/:locale(en|fr',  (req, res) => {
-  // on récupère le paramètre de l'url pour enregistrer la langue
-  res.setLocale(req.params.locale)
-  // on peut maintenant traduire
-  console.log('res.__(leMotAtraduire) = ' + res.__(leMotAtraduire))
-})
 
 //////////////////////////////////////////  Route Adresse
 app.get('/adresse', function (req, res) {
