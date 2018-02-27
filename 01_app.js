@@ -60,7 +60,7 @@ app.get('/:lang(en|fr)', (req, res) =>{
   console.log(res.__('bonjour'));
   console.log(res.__('vitesse'));
   console.log(res.__('Accueil'));
-  res.render('accueil.ejs');
+  res.redirect(req.headers.referer);
 });
 
 //////////////////////////////////////////
