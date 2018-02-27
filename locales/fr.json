@@ -2,5 +2,9 @@
 	"bonjour": "Bonjour",
 	"maison": "Maison",
 	"vitesse": "vitesse",
-	"Accueil": "accueil"
+	"Accueil": "Accueil",
+	"Vider": "Vider",
+	"Adresse": "Adresse",
+	"Projet-veille-node": "Projet Veille Node.js",
+	"Tim-College-de-Maisonneuve": "Tim - Collège de Maisonneuve"
 }
